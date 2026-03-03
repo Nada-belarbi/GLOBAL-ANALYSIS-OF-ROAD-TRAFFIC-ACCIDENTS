@@ -22,7 +22,11 @@ https://www.kaggle.com/datasets/nextmillionaire/car-accident-dataset-2021-2024
 - Clear cyclical accident patterns
 
 ## 📷 Dashboard Preview
-!(screenshots/dashboard1.png)
+![Description](Acceuil.png)
+![Description](Analyse_des_facteurs.png)
+![Description](Analyses_des_vehicules.png)
+![Description](Tendances_mondiales.png)
+![Description](model.png)
 
 ## 📂 Files
-- Nada_Belarbi_Power_Bi.pbix
+ Nada_Belarbi_Power_Bi.pbix
