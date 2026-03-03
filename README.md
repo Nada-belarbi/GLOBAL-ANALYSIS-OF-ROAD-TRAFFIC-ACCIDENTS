@@ -26,7 +26,7 @@ https://www.kaggle.com/datasets/nextmillionaire/car-accident-dataset-2021-2024
 ![Description](Analyse_des_facteurs.png)
 ![Description](Analyses_des_vehicules.png)
 ![Description](Tendances_mondiales.png)
-![Description](model.png)
+![Description](Model.png)
 
 ## 📂 Files
  Nada_Belarbi_Power_Bi.pbix
