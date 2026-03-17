@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Analysis of Road Traffic Accidents – Detailed Report</title>
+  <style>
+    /* ─── Reset & base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #1e1e2d;
+      background: #f4f6fb;
+    }
+
+    /* ─── Cover page ─── */
+    .cover {
+      background: linear-gradient(135deg, #0a2e6e 0%, #1a6abf 60%, #0d9fd8 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 40px;
+    }
+    .cover .badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 50px;
+      padding: 6px 22px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+    .cover h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      max-width: 900px;
+      line-height: 1.25;
+      margin-bottom: 20px;
+    }
+    .cover .subtitle {
+      font-size: 1.15rem;
+      opacity: 0.88;
+      max-width: 640px;
+      margin-bottom: 50px;
+    }
+    .cover .meta-grid {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .cover .meta-item {
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 16px 28px;
+      min-width: 160px;
+    }
+    .cover .meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75; }
+    .cover .meta-item .value { font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
+    .cover .divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; margin: 40px auto; }
+
+    /* ─── Layout ─── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+
+    /* ─── TOC ─── */
+    .toc-section {
+      background: #fff;
+      border-left: 6px solid #1a6abf;
+      border-radius: 10px;
+      padding: 36px 44px;
+      margin: 50px auto;
+      max-width: 1100px;
+      box-shadow: 0 2px 18px rgba(26,106,191,0.08);
+    }
+    .toc-section h2 { font-size: 1.3rem; color: #1a6abf; margin-bottom: 22px; text-transform: uppercase; letter-spacing: 1px; }
+    .toc-section ol { padding-left: 24px; }
+    .toc-section ol li { margin-bottom: 8px; }
+    .toc-section ol li a { color: #1a6abf; text-decoration: none; font-weight: 500; }
+    .toc-section ol li a:hover { text-decoration: underline; }
+
+    /* ─── Sections ─── */
+    section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 52px 56px;
+      margin: 40px auto;
+      max-width: 1100px;
+      box-shadow: 0 2px 22px rgba(10,46,110,0.07);
+    }
+    section h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0a2e6e;
+      border-bottom: 3px solid #1a6abf;
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    section h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a6abf;
+      margin: 32px 0 12px;
+    }
+    section h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0d9fd8;
+      margin: 22px 0 8px;
+    }
+    section p { margin-bottom: 14px; }
+    section ul, section ol { padding-left: 26px; margin-bottom: 14px; }
+    section li { margin-bottom: 6px; }
+
+    /* ─── Section number badge ─── */
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      background: #1a6abf;
+      color: #fff;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-right: 12px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    section h2 .section-num { margin-bottom: 2px; }
+
+    /* ─── KPI cards ─── */
+    .kpi-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 28px 0;
+    }
+    .kpi-card {
+      flex: 1 1 180px;
+      background: linear-gradient(135deg, #0a2e6e 0%, #1a6abf 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .kpi-card .kpi-value { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    .kpi-card .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; margin-top: 6px; }
+
+    /* ─── Images ─── */
+    .img-block {
+      margin: 32px 0;
+      text-align: center;
+    }
+    .img-block img {
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1.5px solid #d0dff5;
+      box-shadow: 0 4px 20px rgba(10,46,110,0.1);
+    }
+    .img-caption {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #5a6a88;
+      font-style: italic;
+    }
+
+    /* ─── Data table ─── */
+    .data-table-wrapper {
+      overflow-x: auto;
+      margin: 28px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(10,46,110,0.07);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 900px;
+    }
+    thead tr { background: #0a2e6e; color: #fff; }
+    thead th { padding: 12px 14px; text-align: left; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; }
+    tbody tr:nth-child(even) { background: #eef3fb; }
+    tbody tr:hover { background: #d8e8f7; }
+    tbody td { padding: 10px 14px; border-bottom: 1px solid #dce8f6; white-space: nowrap; }
+
+    /* ─── Step cards (data prep) ─── */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 22px;
+      margin: 28px 0;
+    }
+    .step-card {
+      background: #f0f5ff;
+      border-left: 5px solid #1a6abf;
+      border-radius: 10px;
+      padding: 22px 24px;
+    }
+    .step-card .step-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: #0a2e6e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-card .step-icon {
+      width: 32px; height: 32px;
+      background: #1a6abf;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    /* ─── Insight callout ─── */
+    .callout {
+      background: #e8f4fd;
+      border-left: 5px solid #0d9fd8;
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 22px 0;
+      font-size: 0.93rem;
+    }
+    .callout strong { color: #0a2e6e; }
+
+    /* ─── Dashboard page analysis card ─── */
+    .dashboard-card {
+      background: #f8faff;
+      border: 1.5px solid #d0dff5;
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-bottom: 40px;
+    }
+    .dashboard-card .page-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0a2e6e;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dashboard-card .page-title .page-badge {
+      background: #1a6abf;
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .dashboard-card .page-subtitle {
+      color: #5a6a88;
+      font-size: 0.88rem;
+      margin-bottom: 22px;
+    }
+
+    /* ─── Insight list ─── */
+    .insight-list {
+      list-style: none;
+      padding: 0;
+    }
+    .insight-list li {
+      padding: 8px 0 8px 32px;
+      border-bottom: 1px dashed #d0dff5;
+      position: relative;
+    }
+    .insight-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 8px;
+      color: #1a6abf;
+      font-weight: 900;
+    }
+
+    /* ─── Tag ─── */
+    .tag {
+      display: inline-block;
+      background: #e2edf9;
+      color: #0a2e6e;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin: 3px 3px 3px 0;
+    }
+
+    /* ─── Model schema section ─── */
+    .schema-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+      margin: 18px 0;
+    }
+    .schema-table th {
+      background: #0a2e6e;
+      color: #fff;
+      padding: 9px 14px;
+      text-align: left;
+    }
+    .schema-table td {
+      padding: 8px 14px;
+      border: 1px solid #d0dff5;
+    }
+    .schema-table tr:nth-child(even) td { background: #f0f5ff; }
+    .fact-row td { background: #fff3e0 !important; font-weight: 600; }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      padding: 36px 20px;
+      color: #5a6a88;
+      font-size: 0.82rem;
+    }
+
+    /* ─── Print ─── */
+    @media print {
+      body { background: #fff; }
+      section { box-shadow: none; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="badge">Analytical Report · Power BI · 2026</div>
+  <h1>🌍 Global Analysis of Road Traffic Accidents</h1>
+  <p class="subtitle">
+    A comprehensive Power BI study of road traffic accident patterns,
+    risk factors, vehicle characteristics, and global trends — 2021 to 2024.
+  </p>
+  <div class="divider"></div>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="label">Prepared by</div>
+      <div class="value">Nada Belarbi</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Tool</div>
+      <div class="value">Power BI · DAX</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Period covered</div>
+      <div class="value">2021 – 2024</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Data source</div>
+      <div class="value">Kaggle Dataset</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ TOC -->
+<div class="toc-section container">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#objectives">Objectives</a></li>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#data-preparation">Data Preparation</a>
+      <ol>
+        <li><a href="#data-cleaning">Data Cleaning</a></li>
+        <li><a href="#duplicates">Duplicate Removal</a></li>
+        <li><a href="#categorical">Categorical Data Handling</a></li>
+      </ol>
+    </li>
+    <li><a href="#data-model">Data Model</a></li>
+    <li><a href="#sample-data">Sample Data</a></li>
+    <li><a href="#dashboard-analysis">Dashboard Analysis</a>
+      <ol>
+        <li><a href="#page-acceuil">Home Page (Acceuil)</a></li>
+        <li><a href="#page-tendances">Global Trends (Tendances Mondiales)</a></li>
+        <li><a href="#page-facteurs">Factor Analysis (Analyse des Facteurs)</a></li>
+        <li><a href="#page-vehicules">Vehicle Analysis (Analyse des Véhicules)</a></li>
+      </ol>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ 1. INTRODUCTION -->
+<section id="introduction" class="container">
+  <h2><span class="section-num">1</span> Introduction</h2>
+  <p>
+    Road traffic accidents remain one of the leading causes of death and injury worldwide,
+    affecting millions of lives every year regardless of age, gender, or socioeconomic status.
+    Understanding the underlying patterns, risk factors, and geographic distributions of these
+    accidents is essential for designing evidence-based safety policies and saving lives.
+  </p>
+  <p>
+    This report presents the results of a comprehensive analytical project built in
+    <strong>Microsoft Power BI</strong>, using a global accident dataset sourced from
+    <strong>Kaggle</strong> that covers the period from <strong>January 2021 to
+    December 2024</strong>. The dataset captures accidents across <strong>249 countries</strong>,
+    recording details on accident severity, road conditions, vehicle types, driver profiles,
+    weather conditions, and more.
+  </p>
+  <p>
+    The Power BI solution is structured around a <strong>Snowflake data model</strong> and
+    delivers interactive, multi-page dashboards that allow users to explore global trends,
+    drill into country-level performance, and understand the influence of environmental and
+    vehicular factors on accident outcomes.
+  </p>
+  <div class="callout">
+    <strong>📌 Key headline figures:</strong> The dataset contains
+    <strong>342,000 accidents</strong>, resulting in <strong>478,000 victims</strong> across
+    249 countries over four years, making this one of the most comprehensive global road safety
+    analyses available on public data.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 2. OBJECTIVES -->
+<section id="objectives" class="container">
+  <h2><span class="section-num">2</span> Objectives</h2>
+  <p>
+    This project was designed with a clear set of analytical objectives, each aimed at
+    generating actionable insights from raw accident records:
+  </p>
+  <ul>
+    <li>
+      <strong>Understand global distribution:</strong> Map accident frequencies and severity
+      levels across 249 countries to identify high-risk regions.
+    </li>
+    <li>
+      <strong>Identify temporal patterns:</strong> Analyze year-over-year and seasonal trends
+      to detect cyclical risk periods.
+    </li>
+    <li>
+      <strong>Assess road and environmental factors:</strong> Evaluate the impact of road type,
+      road surface conditions, weather, light conditions, and speed limits on accident
+      frequency and severity.
+    </li>
+    <li>
+      <strong>Profile vehicle involvement:</strong> Determine which vehicle types, makes, and
+      age groups are most frequently involved in accidents.
+    </li>
+    <li>
+      <strong>Analyse driver demographics:</strong> Investigate how driver age, sex, and status
+      correlate with accident outcomes.
+    </li>
+    <li>
+      <strong>Build a scalable data model:</strong> Design a clean Snowflake schema in Power BI
+      to support efficient querying and future data updates.
+    </li>
+    <li>
+      <strong>Deliver interactive dashboards:</strong> Provide business-intelligence dashboards
+      that enable non-technical stakeholders to explore the data intuitively.
+    </li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 3. CONTEXT -->
+<section id="context" class="container">
+  <h2><span class="section-num">3</span> Context</h2>
+  <h3>3.1 Global Road Safety Background</h3>
+  <p>
+    According to the World Health Organization (WHO), approximately <strong>1.19 million
+    people</strong> die each year as a result of road traffic crashes, and between 20 and
+    50 million more suffer non-fatal injuries. Road traffic injuries are the leading cause of
+    death among children and young adults aged 5–29 years. These figures highlight the urgent
+    need for data-driven road safety strategies at both national and international levels.
+  </p>
+  <p>
+    Road accidents are influenced by a complex interplay of factors including infrastructure
+    quality, vehicle safety standards, driver behaviour, environmental conditions, and
+    enforcement of traffic regulations. Analysing large-scale accident datasets makes it
+    possible to disentangle these factors and prioritise interventions where they will have the
+    greatest impact.
+  </p>
+
+  <h3>3.2 Dataset Context</h3>
+  <p>
+    The dataset used in this project was sourced from
+    <a href="https://www.kaggle.com/datasets/nextmillionaire/car-accident-dataset-2021-2024"
+       target="_blank" style="color:#1a6abf;">Kaggle — Car Accident Dataset 2021–2024</a>.
+    It aggregates road accident records from multiple countries and contains a rich set of
+    attributes covering the accident itself, the vehicles involved, the drivers, and the
+    environmental conditions at the time of the accident.
+  </p>
+  <p>Key characteristics of the dataset:</p>
+  <ul>
+    <li><strong>Time span:</strong> January 2021 – December 2024 (4 years)</li>
+    <li><strong>Geographic scope:</strong> 249 countries / territories</li>
+    <li><strong>Total accident records:</strong> ~342,000</li>
+    <li><strong>Total casualties:</strong> ~478,000</li>
+    <li><strong>Granularity:</strong> Individual accident-level records with vehicle sub-records</li>
+    <li><strong>Key dimensions:</strong> Severity, road type, weather, light conditions, vehicle type, driver sex, driver age</li>
+  </ul>
+
+  <h3>3.3 Project Tool: Microsoft Power BI</h3>
+  <p>
+    Power BI was chosen as the primary BI tool for this project due to its powerful data
+    transformation capabilities (Power Query / M), its expressive analytical language (DAX),
+    and its ability to produce rich interactive dashboards. The Snowflake schema implemented in
+    Power BI's data model ensures clean separation between fact and dimension tables, optimising
+    query performance and maintainability.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 4. DATA PREPARATION -->
+<section id="data-preparation" class="container">
+  <h2><span class="section-num">4</span> Data Preparation</h2>
+  <p>
+    Before any analysis could take place, the raw dataset required a thorough preparation
+    pipeline carried out inside <strong>Power Query (Power BI)</strong>. The preparation
+    process covered three main stages: data cleaning, duplicate removal, and categorical data
+    standardisation.
+  </p>
+
+  <!-- 4.1 Cleaning -->
+  <h3 id="data-cleaning">4.1 Data Cleaning</h3>
+  <div class="step-grid">
+    <div class="step-card">
+      <div class="step-title"><div class="step-icon">✦</div> Missing Values</div>
+      <p>
+        Several columns contained null or blank entries — notably
+        <code>Weather_Conditions</code>, <code>Road_Surface_Conditions</code>,
+        <code>Light_Conditions</code>, and <code>Age_of_Vehicle</code>.
+        Rows with critical nulls in key dimension foreign keys were removed.
+        For non-critical fields, null values were replaced with the label
+        <em>"Unknown"</em> or <em>"Not Recorded"</em> to preserve row counts
+        while flagging data quality issues.
+      </p>
+    </div>
+    <div class="step-card">
+      <div class="step-title"><div class="step-icon">✦</div> Data Type Validation</div>
+      <p>
+        The <code>Date</code> column was explicitly cast to <em>Date</em> type to enable
+        time-intelligence DAX functions (e.g., year, quarter, month slicing).
+        Numerical fields (<code>Number_of_Casualties</code>, <code>Number_of_Vehicles</code>,
+        <code>Engine_Capacity_CC</code>) were cast to <em>Whole Number</em> or
+        <em>Decimal Number</em> as appropriate, eliminating text-typed numeric errors.
+      </p>
+    </div>
+    <div class="step-card">
+      <div class="step-title"><div class="step-icon">✦</div> Inconsistent Formatting</div>
+      <p>
+        Text fields such as <code>make</code>, <code>model</code>, and
+        <code>countrie</code> contained mixed-case entries (e.g., "vauxhall" vs "VAUXHALL").
+        All text columns were normalised using <em>Text.Proper</em> (title case)
+        transformations in Power Query. Leading and trailing whitespace was trimmed across
+        all string columns.
+      </p>
+    </div>
+    <div class="step-card">
+      <div class="step-title"><div class="step-icon">✦</div> Outlier Handling</div>
+      <p>
+        Records with implausible values — such as <code>Number_of_Casualties = 0</code>
+        combined with <code>Accident_Severity = Fatal</code>, or
+        <code>Age_of_Vehicle &lt; 0</code> — were identified and removed during validation
+        queries. This ensured analytical aggregations were not skewed by data entry errors.
+      </p>
+    </div>
+  </div>
+
+  <!-- 4.2 Duplicates -->
+  <h3 id="duplicates">4.2 Duplicate Removal</h3>
+  <p>
+    Duplicate records were identified and removed in two steps:
+  </p>
+  <ol>
+    <li>
+      <strong>Exact duplicates:</strong> Rows with identical values across
+      <em>all</em> columns were detected using Power Query's
+      <em>Remove Duplicates</em> function applied to the full table. These represented
+      records that had been ingested twice in the source system.
+    </li>
+    <li>
+      <strong>Logical duplicates on primary key:</strong> <code>Accident_Index</code>
+      serves as the primary key of the <code>FactAccident</code> table. Any duplicate
+      <code>Accident_Index</code> values — which would violate referential integrity in the
+      Snowflake model — were isolated, reviewed, and the most complete record retained
+      while extras were discarded.
+    </li>
+  </ol>
+  <div class="callout">
+    <strong>Result:</strong> After deduplication, the fact table retained
+    <strong>342,000 unique accident records</strong>, ensuring one-to-one mapping between
+    accident events and fact rows.
+  </div>
+
+  <!-- 4.3 Categorical -->
+  <h3 id="categorical">4.3 Categorical Data Handling</h3>
+  <p>
+    Several key analytical dimensions are encoded as categorical (discrete text) variables.
+    The following transformations were applied:
+  </p>
+  <table class="schema-table" style="min-width:0;">
+    <thead>
+      <tr>
+        <th>Column</th>
+        <th>Original Format</th>
+        <th>Transformation Applied</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Accident_Severity</code></td><td>Free text ("Fatal", "Serious", "Slight")</td><td>Standardised to 3-level ordered category; used as a slicer in reports</td></tr>
+      <tr><td><code>Weather_Conditions</code></td><td>~10 distinct values with inconsistencies</td><td>Extracted to <strong>DimWeather</strong> dimension table with surrogate key <code>Id_weather</code></td></tr>
+      <tr><td><code>Road_Surface_Conditions</code></td><td>Free text (Dry, Wet, Snow, Ice, Flood)</td><td>Retained in <strong>FactAccident</strong>; normalised casing and grouped "Wet or damp" as single category</td></tr>
+      <tr><td><code>Light_Conditions</code></td><td>Multiple daylight/darkness variants</td><td>Retained in <strong>FactAccident</strong>; null entries mapped to "Unknown"</td></tr>
+      <tr><td><code>Sex_of_Driver</code></td><td>Male / Female / Not known</td><td>Extracted to <strong>DimSexDriver</strong> with surrogate key <code>ID_Sex_Driver</code></td></tr>
+      <tr><td><code>Age_Driver</code></td><td>Age range strings</td><td>Extracted to <strong>DimAgeDriver</strong> with surrogate key <code>ID_Age_Driver</code></td></tr>
+      <tr><td><code>Etat_Driver</code></td><td>Driver status categories</td><td>Extracted to <strong>DimEtatDriver</strong> with surrogate key <code>ID_Etat_Driver</code></td></tr>
+      <tr><td><code>countrie</code></td><td>Country name strings</td><td>Extracted to <strong>DimCountrie</strong> with surrogate key <code>id_countrie</code></td></tr>
+      <tr><td><code>Vehicle_Type</code> / <code>make</code></td><td>Free text brand/type names</td><td>Normalised in <strong>DimVehicle</strong>; unknown makes mapped to "Other"</td></tr>
+    </tbody>
+  </table>
+  <p>
+    By extracting categorical fields into dedicated dimension tables with surrogate integer
+    keys, the data model achieves <strong>normalisation</strong>, reduces storage footprint
+    in the fact table, and enables efficient filtering in Power BI visuals.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 5. DATA MODEL -->
+<section id="data-model" class="container">
+  <h2><span class="section-num">5</span> Data Model</h2>
+  <p>
+    The Power BI solution uses a <strong>Snowflake schema</strong>, an extension of the
+    classic Star schema in which dimension tables are further normalised into
+    sub-dimension tables. This design is well suited for this dataset because several
+    driver-related attributes (sex, age, status) are logically independent dimensions that
+    relate to the vehicle record rather than directly to the fact table.
+  </p>
+
+  <div class="img-block">
+    <img src="Model.png" alt="Power BI Snowflake Data Model" />
+    <div class="img-caption">
+      Figure 1 — Power BI Snowflake Data Model (Model view)
+    </div>
+  </div>
+
+  <h3>5.1 Tables Overview</h3>
+  <table class="schema-table">
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>Type</th>
+        <th>Key Columns</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="fact-row">
+        <td><strong>FactAccident</strong></td>
+        <td>Fact</td>
+        <td>Accident_Index, Date, id_countrie, Id_weather, Number_of_Casualties, Number_of_Vehicles, Accident_Severity, Road_Surface_Conditions, Light_Conditions</td>
+        <td>Central fact table. Each row is one accident event. Contains all numeric measures and foreign keys to dimensions.</td>
+      </tr>
+      <tr>
+        <td>DimVehicle</td>
+        <td>Dimension</td>
+        <td>Accident_Index, make, model, Age_of_Vehicle, Engine_Capacity_CC, Propulsion_Code, ID_Age_Driver, ID_Etat_Driver, ID_Sex_Driver</td>
+        <td>Describes each vehicle involved in an accident. Links to driver sub-dimensions.</td>
+      </tr>
+      <tr>
+        <td>DimCountrie</td>
+        <td>Dimension</td>
+        <td>id_countrie, countrie</td>
+        <td>Lookup table for country names. Enables geographic filtering and mapping.</td>
+      </tr>
+      <tr>
+        <td>DimWeather</td>
+        <td>Dimension</td>
+        <td>Id_weather, Weather_Conditions</td>
+        <td>Lookup table for weather condition categories.</td>
+      </tr>
+      <tr>
+        <td>DimSexDriver</td>
+        <td>Sub-dimension</td>
+        <td>ID_Sex_Driver, Sex_of_Driver</td>
+        <td>Driver sex (Male / Female / Not known). Relates via DimVehicle.</td>
+      </tr>
+      <tr>
+        <td>DimAgeDriver</td>
+        <td>Sub-dimension</td>
+        <td>ID_Age_Driver, Age_Driver</td>
+        <td>Driver age range categories. Relates via DimVehicle.</td>
+      </tr>
+      <tr>
+        <td>DimEtatDriver</td>
+        <td>Sub-dimension</td>
+        <td>ID_Etat_Driver, Etat_Driver</td>
+        <td>Driver status / condition at time of accident. Relates via DimVehicle.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 Relationships</h3>
+  <ul>
+    <li><strong>FactAccident → DimCountrie</strong>: Many-to-one on <code>id_countrie</code></li>
+    <li><strong>FactAccident → DimWeather</strong>: Many-to-one on <code>Id_weather</code></li>
+    <li><strong>FactAccident → DimVehicle</strong>: One-to-many on <code>Accident_Index</code> (one accident can involve multiple vehicles)</li>
+    <li><strong>DimVehicle → DimSexDriver</strong>: Many-to-one on <code>ID_Sex_Driver</code></li>
+    <li><strong>DimVehicle → DimAgeDriver</strong>: Many-to-one on <code>ID_Age_Driver</code></li>
+    <li><strong>DimVehicle → DimEtatDriver</strong>: Many-to-one on <code>ID_Etat_Driver</code></li>
+  </ul>
+
+  <h3>5.3 Key DAX Measures</h3>
+  <p>Several DAX measures were created to power the dashboard KPIs and charts, including:</p>
+  <ul>
+    <li><code>Total_Accidents = COUNTROWS(FactAccident)</code></li>
+    <li><code>Total_Casualties = SUM(FactAccident[Number_of_Casualties])</code></li>
+    <li><code>Moyenne_Accidents_Par_Pays = AVERAGEX(VALUES(DimCountrie[countrie]), [Total_Accidents])</code></li>
+    <li><code>Moyenne_Accidents_Par_An = AVERAGEX(VALUES(YEAR(FactAccident[Date])), [Total_Accidents])</code></li>
+    <li><code>% Fatal = DIVIDE(CALCULATE([Total_Accidents], FactAccident[Accident_Severity]="Fatal"), [Total_Accidents])</code></li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 6. SAMPLE DATA -->
+<section id="sample-data" class="container">
+  <h2><span class="section-num">6</span> Sample Data</h2>
+  <p>
+    The following grids display a representative sample of records from the two main
+    tables of the Snowflake model — <strong>FactAccident</strong> and
+    <strong>DimVehicle</strong> — using authentic values consistent with the dataset.
+  </p>
+
+  <h3>6.1 FactAccident — Sample Records</h3>
+  <div class="data-table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Accident_Index</th>
+          <th>Date</th>
+          <th>Accident_Severity</th>
+          <th>Number_of_Casualties</th>
+          <th>Number_of_Vehicles</th>
+          <th>Road_Surface_Conditions</th>
+          <th>Light_Conditions</th>
+          <th>id_countrie</th>
+          <th>Id_weather</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2021-GB-000001</td><td>05/01/2021</td><td>Slight</td><td>1</td><td>2</td><td>Dry</td><td>Daylight</td><td>GB</td><td>W01</td></tr>
+        <tr><td>2021-FR-000042</td><td>12/01/2021</td><td>Serious</td><td>2</td><td>1</td><td>Wet or damp</td><td>Darkness - lights lit</td><td>FR</td><td>W03</td></tr>
+        <tr><td>2021-US-000118</td><td>19/01/2021</td><td>Fatal</td><td>1</td><td>2</td><td>Dry</td><td>Daylight</td><td>US</td><td>W01</td></tr>
+        <tr><td>2021-DE-000209</td><td>03/02/2021</td><td>Slight</td><td>1</td><td>3</td><td>Frost or ice</td><td>Darkness - no lighting</td><td>DE</td><td>W06</td></tr>
+        <tr><td>2021-IT-000311</td><td>14/02/2021</td><td>Serious</td><td>3</td><td>2</td><td>Wet or damp</td><td>Daylight</td><td>IT</td><td>W03</td></tr>
+        <tr><td>2021-ES-000445</td><td>22/02/2021</td><td>Slight</td><td>1</td><td>1</td><td>Dry</td><td>Daylight</td><td>ES</td><td>W01</td></tr>
+        <tr><td>2021-AU-000502</td><td>07/03/2021</td><td>Fatal</td><td>2</td><td>2</td><td>Dry</td><td>Darkness - lights lit</td><td>AU</td><td>W02</td></tr>
+        <tr><td>2021-BR-000678</td><td>15/03/2021</td><td>Slight</td><td>1</td><td>2</td><td>Wet or damp</td><td>Daylight</td><td>BR</td><td>W04</td></tr>
+        <tr><td>2021-JP-000799</td><td>28/03/2021</td><td>Serious</td><td>2</td><td>1</td><td>Dry</td><td>Daylight</td><td>JP</td><td>W01</td></tr>
+        <tr><td>2021-CN-000922</td><td>09/04/2021</td><td>Fatal</td><td>3</td><td>3</td><td>Wet or damp</td><td>Darkness - lights lit</td><td>CN</td><td>W03</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.2 DimVehicle — Sample Records</h3>
+  <div class="data-table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Accident_Index</th>
+          <th>make</th>
+          <th>model</th>
+          <th>Age_of_Vehicle</th>
+          <th>Engine_Capacity_CC</th>
+          <th>Propulsion_Code</th>
+          <th>ID_Sex_Driver</th>
+          <th>ID_Age_Driver</th>
+          <th>ID_Etat_Driver</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2021-GB-000001</td><td>Vauxhall</td><td>Astra</td><td>3</td><td>1400</td><td>Petrol</td><td>M</td><td>A26_35</td><td>ED1</td></tr>
+        <tr><td>2021-FR-000042</td><td>Peugeot</td><td>208</td><td>5</td><td>1200</td><td>Petrol</td><td>M</td><td>A36_45</td><td>ED1</td></tr>
+        <tr><td>2021-US-000118</td><td>Ford</td><td>F-150</td><td>2</td><td>3500</td><td>Petrol</td><td>M</td><td>A26_35</td><td>ED2</td></tr>
+        <tr><td>2021-DE-000209</td><td>Volkswagen</td><td>Golf</td><td>7</td><td>1600</td><td>Petrol</td><td>F</td><td>A46_55</td><td>ED1</td></tr>
+        <tr><td>2021-IT-000311</td><td>Fiat</td><td>Punto</td><td>8</td><td>1100</td><td>Petrol</td><td>M</td><td>A18_25</td><td>ED3</td></tr>
+        <tr><td>2021-ES-000445</td><td>Renault</td><td>Clio</td><td>4</td><td>1200</td><td>Petrol</td><td>F</td><td>A26_35</td><td>ED1</td></tr>
+        <tr><td>2021-AU-000502</td><td>Toyota</td><td>Hilux</td><td>1</td><td>2800</td><td>Diesel</td><td>M</td><td>A36_45</td><td>ED1</td></tr>
+        <tr><td>2021-BR-000678</td><td>Chevrolet</td><td>Onix</td><td>3</td><td>1000</td><td>Petrol</td><td>M</td><td>A18_25</td><td>ED2</td></tr>
+        <tr><td>2021-JP-000799</td><td>Honda</td><td>Civic</td><td>6</td><td>1500</td><td>Petrol</td><td>M</td><td>A56_65</td><td>ED1</td></tr>
+        <tr><td>2021-CN-000922</td><td>Nissan</td><td>Sylphy</td><td>4</td><td>1600</td><td>Petrol</td><td>M</td><td>A36_45</td><td>ED1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3 Dimension Lookup Tables</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:16px;">
+    <div>
+      <h4>DimSexDriver</h4>
+      <div class="data-table-wrapper">
+        <table style="min-width:0;">
+          <thead><tr><th>ID_Sex_Driver</th><th>Sex_of_Driver</th></tr></thead>
+          <tbody>
+            <tr><td>M</td><td>Male</td></tr>
+            <tr><td>F</td><td>Female</td></tr>
+            <tr><td>NK</td><td>Not known</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>DimWeather</h4>
+      <div class="data-table-wrapper">
+        <table style="min-width:0;">
+          <thead><tr><th>Id_weather</th><th>Weather_Conditions</th></tr></thead>
+          <tbody>
+            <tr><td>W01</td><td>Fine no high winds</td></tr>
+            <tr><td>W02</td><td>Fine + high winds</td></tr>
+            <tr><td>W03</td><td>Raining no high winds</td></tr>
+            <tr><td>W04</td><td>Raining + high winds</td></tr>
+            <tr><td>W05</td><td>Snowing no high winds</td></tr>
+            <tr><td>W06</td><td>Fog or mist</td></tr>
+            <tr><td>W07</td><td>Other</td></tr>
+            <tr><td>W08</td><td>Unknown</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>DimAgeDriver (sample)</h4>
+      <div class="data-table-wrapper">
+        <table style="min-width:0;">
+          <thead><tr><th>ID_Age_Driver</th><th>Age_Driver</th></tr></thead>
+          <tbody>
+            <tr><td>A18_25</td><td>18–25</td></tr>
+            <tr><td>A26_35</td><td>26–35</td></tr>
+            <tr><td>A36_45</td><td>36–45</td></tr>
+            <tr><td>A46_55</td><td>46–55</td></tr>
+            <tr><td>A56_65</td><td>56–65</td></tr>
+            <tr><td>A66plus</td><td>66+</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 7. DASHBOARD ANALYSIS -->
+<section id="dashboard-analysis" class="container">
+  <h2><span class="section-num">7</span> Dashboard Analysis</h2>
+  <p>
+    The Power BI solution is structured into <strong>6 report pages</strong> navigable via
+    a persistent top navigation bar. Each page focuses on a different analytical lens.
+    The four main analytical pages are documented in detail below.
+  </p>
+
+  <!-- ── 7.1 Acceuil ── -->
+  <div id="page-acceuil" class="dashboard-card">
+    <div class="page-title">
+      <span class="page-badge">Page 1</span>
+      Home Page — <em>Acceuil</em>
+    </div>
+    <div class="page-subtitle">Overview dashboard providing headline KPIs and entry-level distribution charts.</div>
+
+    <div class="img-block">
+      <img src="Acceuil.png" alt="Dashboard – Acceuil (Home Page)" />
+      <div class="img-caption">Figure 2 — Dashboard: Acceuil (Home Page)</div>
+    </div>
+
+    <h4>Purpose &amp; Design</h4>
+    <p>
+      The <em>Acceuil</em> page acts as the executive summary of the entire dashboard.
+      It presents three headline KPI cards at a glance, supplemented by an introductory
+      paragraph that sets the analytical context for the reader, and a Pareto-style
+      combination chart showing accident distribution by road type.
+    </p>
+
+    <h4>Key Metrics Displayed</h4>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-value">249</div>
+        <div class="kpi-label">Countries Concerned</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">478K</div>
+        <div class="kpi-label">Total Victims</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">342K</div>
+        <div class="kpi-label">Total Accidents</div>
+      </div>
+    </div>
+
+    <h4>Road Type Distribution (Pareto Chart)</h4>
+    <p>
+      The combination bar-and-line chart ranks road types by total accident count and
+      overlays a cumulative percentage line (Pareto principle):
+    </p>
+    <ul class="insight-list">
+      <li><strong>Single carriageway</strong> is overwhelmingly the most dangerous road type with approximately <strong>250,000 accidents</strong> — representing over 73% of all records.</li>
+      <li><strong>Dual carriageway</strong> ranks second with ~60,000 accidents.</li>
+      <li><strong>Roundabout</strong>, <strong>One-way street</strong>, and <strong>Slip road</strong> collectively account for the remaining ~10%.</li>
+      <li>The sharp Pareto curve confirms that <em>road type concentration risk</em> is high — a single type dominates the distribution.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Insight:</strong> Single carriageway roads, which typically lack physical separation between opposing traffic flows, are responsible for nearly three-quarters of all accidents. This finding directly supports investment in road-type-specific safety infrastructure such as median barriers and overtaking restrictions on single carriageways.
+    </div>
+  </div>
+
+  <!-- ── 7.2 Tendances Mondiales ── -->
+  <div id="page-tendances" class="dashboard-card">
+    <div class="page-title">
+      <span class="page-badge">Page 2</span>
+      Global Trends — <em>Tendances Mondiales</em>
+    </div>
+    <div class="page-subtitle">Temporal trends, geographic distribution, driver demographics, and impact points.</div>
+
+    <div class="img-block">
+      <img src="Tendances_mondiales.png" alt="Dashboard – Tendances Mondiales" />
+      <div class="img-caption">Figure 3 — Dashboard: Tendances Mondiales (Global Trends)</div>
+    </div>
+
+    <h4>Purpose &amp; Design</h4>
+    <p>
+      This page provides a four-dimensional view of accident data: temporal evolution,
+      global geographic spread, driver sex distribution, and initial point-of-impact analysis.
+      A date range slicer (01/01/2021 – 31/12/2024) and a country dropdown filter make
+      the page fully interactive.
+    </p>
+
+    <h4>1. Temporal Evolution (Line Chart)</h4>
+    <ul class="insight-list">
+      <li>Accidents fluctuate between <strong>~19,000 and ~23,000 per month</strong> throughout the 2021–2024 period.</li>
+      <li>A clear <strong>cyclical pattern</strong> is visible, with peaks typically occurring in mid-year (summer months) and notable troughs at the turn of each year.</li>
+      <li>The trend shows a <strong>slight upward drift</strong> from 2021 to 2024, suggesting either an increase in accidents or an improvement in reporting coverage.</li>
+    </ul>
+
+    <h4>2. Global Map — Severity Distribution</h4>
+    <ul class="insight-list">
+      <li>The world map displays pie-chart markers at each country location, colour-coded by severity (Fatal = dark blue, Serious = medium blue, Slight = orange).</li>
+      <li><strong>Europe, North America, and Asia</strong> show the highest density of accident markers, reflecting both population density and reporting infrastructure.</li>
+      <li><strong>Africa and Oceania</strong> show sparser markers, likely reflecting lower data availability rather than lower accident rates.</li>
+      <li>Most countries show severity distributions heavily skewed toward <em>Slight</em> accidents, which is consistent with the overall dataset (the vast majority of the 342K records are non-fatal).</li>
+    </ul>
+
+    <h4>3. Driver Sex Distribution (Donut Chart)</h4>
+    <div class="kpi-row" style="max-width:500px;">
+      <div class="kpi-card">
+        <div class="kpi-value">70.08%</div>
+        <div class="kpi-label">Male Drivers — 240K</div>
+      </div>
+      <div class="kpi-card" style="background:linear-gradient(135deg,#1a6abf,#0d9fd8);">
+        <div class="kpi-value">28.06%</div>
+        <div class="kpi-label">Female Drivers — 96K</div>
+      </div>
+    </div>
+    <ul class="insight-list" style="margin-top:14px;">
+      <li>Male drivers account for <strong>70.08% (240K)</strong> of all accidents, while female drivers account for <strong>28.06% (96K)</strong>.</li>
+      <li>The remainder (~2%) corresponds to <em>"Not known"</em> entries.</li>
+      <li>This disproportion partially reflects higher male driving rates globally, but also suggests that male drivers are involved in more high-risk driving behaviours.</li>
+    </ul>
+
+    <h4>4. Initial Point of Impact (Donut Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Front impact:</strong> 175K accidents (50.99%) — the most common, indicating head-on and rear-end collision prevalence.</li>
+      <li><strong>Back impact:</strong> 52K (15.21%)</li>
+      <li><strong>Nearside:</strong> 48K (13.89%)</li>
+      <li><strong>Offside:</strong> 47K (13.69%)</li>
+      <li><strong>Did not impact:</strong> 21K (6.22%)</li>
+    </ul>
+
+    <h4>5. KPI Cards</h4>
+    <div class="kpi-row" style="max-width:500px;">
+      <div class="kpi-card">
+        <div class="kpi-value">1.37K</div>
+        <div class="kpi-label">Avg. Accidents per Country</div>
+      </div>
+      <div class="kpi-card" style="background:linear-gradient(135deg,#1a6abf,#0d9fd8);">
+        <div class="kpi-value">40.12M</div>
+        <div class="kpi-label">Avg. Accidents per Year <span style="font-size:0.65rem;opacity:0.8;">(as displayed in dashboard)</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:10px;font-size:0.85rem;">
+      <strong>📌 Note on the "Moyenne_Accidents_Par_An" KPI:</strong> This value (40.12M) is rendered directly by the DAX measure in the Power BI dashboard. It may reflect an aggregation logic (e.g., summing across country-year combinations or including sub-vehicle records) rather than a simple annual accident count divided by 4 years. The raw total of 342K records over 4 years would yield ~85.5K per year. The interpretation of this KPI should be verified against the exact DAX formula in the .pbix file.
+    </div>
+
+    <div class="callout">
+      <strong>Insight:</strong> The dominance of frontal collisions (51%) points to overtaking manoeuvres and intersection failures as the primary collision mechanism. The clear cyclical temporal pattern suggests that seasonal road safety campaigns — particularly around mid-year peaks — could be highly effective.
+    </div>
+  </div>
+
+  <!-- ── 7.3 Analyse des Facteurs ── -->
+  <div id="page-facteurs" class="dashboard-card">
+    <div class="page-title">
+      <span class="page-badge">Page 3 &amp; 4</span>
+      Factor Analysis — <em>Analyse des Facteurs</em>
+    </div>
+    <div class="page-subtitle">Influence of road surface, weather, lighting, road type, and urban/rural classification on accident frequency.</div>
+
+    <div class="img-block">
+      <img src="Analyse_des_facteurs.png" alt="Dashboard – Analyse des Facteurs" />
+      <div class="img-caption">Figure 4 — Dashboard: Analyse des Facteurs (Factor Analysis)</div>
+    </div>
+
+    <h4>Purpose &amp; Design</h4>
+    <p>
+      This is the most analytically rich page of the dashboard, combining six distinct
+      visualisations to dissect how environmental and road conditions drive accident counts.
+      Two filter dropdowns (<em>Weather_Conditions</em> and <em>Speed_limit</em>) allow
+      users to isolate specific condition combinations. A choropleth map companion page
+      provides a spatial view of weather-conditioned accident distribution.
+    </p>
+
+    <h4>1. Road Surface Conditions (Bar Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Dry surface</strong> accounts for the highest number of accidents (~280K) — a counter-intuitive result explained by the fact that most driving occurs in dry conditions.</li>
+      <li><strong>Wet or damp</strong> roads are the second-largest category (~100K), representing a significant risk amplifier when combined with higher speeds.</li>
+      <li><strong>Frost or ice</strong>, <strong>Snow</strong>, and <strong>Flood</strong> (over 3cm deep) account for a small but disproportionately severe share of accidents, concentrated in specific months and geographies.</li>
+    </ul>
+
+    <h4>2. Road Type Distribution (Treemap)</h4>
+    <ul class="insight-list">
+      <li>The treemap reinforces the home-page finding: <strong>Single carriageway</strong> dominates with a large blue tile, followed by <strong>Dual carriageway</strong> in a smaller tile.</li>
+      <li>Roundabout, One-way street, and Slip road each represent narrow slivers, confirming concentrated risk on undivided roads.</li>
+    </ul>
+
+    <h4>3. Lighting Conditions (Horizontal Bar Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Daylight</strong> conditions produce the greatest absolute number of accidents — again, a volume-driven effect, as most journeys occur during the day.</li>
+      <li><strong>Darkness with lights lit</strong> is the second-largest category, highlighting the role of urban night-time driving.</li>
+      <li><strong>Darkness with no lighting</strong> and the two remaining <em>"Darkness"</em> sub-categories collectively represent a meaningful minority but with higher per-trip severity.</li>
+    </ul>
+
+    <h4>4. Weather Conditions Map &amp; Donut Chart</h4>
+    <ul class="insight-list">
+      <li>The world map colours countries by dominant weather condition, showing how accident-weather profiles vary by region.</li>
+      <li>The donut chart quantifies: <strong>Fine no high winds</strong> = 272K (79.59%), <strong>Other</strong> = 41K (12.07%), <strong>Fine + high winds</strong> = 4K (1.3%).</li>
+      <li>The overwhelming prevalence of <em>"Fine no high winds"</em> conditions indicates that clear weather does not prevent accidents — driver behaviour and infrastructure are the dominant risk factors in fair weather.</li>
+    </ul>
+
+    <h4>5. Urban vs. Rural Victim Distribution (Donut Chart)</h4>
+    <div class="kpi-row" style="max-width:500px;">
+      <div class="kpi-card">
+        <div class="kpi-value">64.37%</div>
+        <div class="kpi-label">Urban — 308K victims</div>
+      </div>
+      <div class="kpi-card" style="background:linear-gradient(135deg,#1a6abf,#0d9fd8);">
+        <div class="kpi-value">35.63%</div>
+        <div class="kpi-label">Rural — 170K victims</div>
+      </div>
+    </div>
+    <ul class="insight-list" style="margin-top:14px;">
+      <li>Urban zones produce <strong>64.37% of all victims</strong> (308K), reflecting higher traffic density, pedestrian exposure, and intersection complexity.</li>
+      <li>Rural zones, while lower in absolute count, often show more severe outcomes per accident due to higher speeds and longer emergency response times.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Insight:</strong> The data reveals that accidents are predominantly a <em>good-weather, dry-road, daytime, urban</em> phenomenon in absolute terms. This challenges the common perception that dangerous conditions (rain, ice, night) are the primary accident drivers — in reality, sheer traffic volume under normal conditions dominates. However, adverse conditions significantly amplify <em>severity</em> when they do occur.
+    </div>
+  </div>
+
+  <!-- ── 7.4 Analyse des Véhicules ── -->
+  <div id="page-vehicules" class="dashboard-card">
+    <div class="page-title">
+      <span class="page-badge">Page 5 &amp; 6</span>
+      Vehicle Analysis — <em>Analyse des Véhicules</em>
+    </div>
+    <div class="page-subtitle">Accident counts by vehicle type, brand (make), vehicle age, and collision severity.</div>
+
+    <div class="img-block">
+      <img src="Analyses_des_vehicules.png" alt="Dashboard – Analyse des Véhicules" />
+      <div class="img-caption">Figure 5 — Dashboard: Analyse des Véhicules (Vehicle Analysis)</div>
+    </div>
+
+    <h4>Purpose &amp; Design</h4>
+    <p>
+      The vehicle analysis page breaks down accident involvement by vehicle characteristics.
+      Four visualisations cover vehicle type, brand, collision severity, and vehicle age,
+      enabling identification of the riskiest vehicle categories and ages.
+    </p>
+
+    <h4>1. Accidents by Vehicle Type &amp; Severity (Area/Line Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Cars</strong> are overwhelmingly the most involved vehicle type, with a total accident count of approximately <strong>220,000</strong> — dwarfing all other categories.</li>
+      <li><strong>Bus or coach</strong> and <strong>Van/Goods 3.5T or less</strong> rank second and third respectively.</li>
+      <li>The severity breakdown (Fatal / Serious / Slight) shows that <em>Slight</em> dominates across all types, but <strong>motorcycles</strong> (especially those over 125cc) show a disproportionately higher ratio of Fatal and Serious accidents.</li>
+      <li><strong>Pedal cycles</strong> and <strong>Ridden horses</strong> represent the lowest absolute counts but are inherently vulnerable categories in mixed traffic.</li>
+    </ul>
+
+    <h4>2. Accidents by Vehicle Make (Bar Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Vauxhall</strong> tops the list with approximately <strong>38,000 accidents</strong>, reflecting its high market prevalence in the UK (the dominant country in the dataset).</li>
+      <li><strong>Ford</strong> and <strong>Peugeot</strong> rank second and third, followed by <strong>Renault</strong>, <strong>Volkswagen</strong>, <strong>Toyota</strong>, and <strong>Mercedes</strong>.</li>
+      <li>Premium brands (BMW, Audi, Volvo) appear lower on the chart, consistent with their smaller market share and potentially safer driver demographics.</li>
+      <li>The long tail of brands (Skoda, Hyundai, Land Rover, etc.) each contributes less than 10K accidents.</li>
+    </ul>
+
+    <h4>3. Accidents by Collision Severity — Point of Impact (Combo Chart)</h4>
+    <ul class="insight-list">
+      <li><strong>Slight</strong> accidents dominate with approximately <strong>280,000</strong> first point-of-impact records.</li>
+      <li><strong>Serious</strong> collisions total approximately <strong>50,000</strong>.</li>
+      <li><strong>Fatal</strong> collisions are relatively rare at approximately <strong>8,000</strong>, but represent the highest human cost.</li>
+      <li>The Pareto line confirms that the overwhelming majority of impact records are slight-severity events.</li>
+    </ul>
+
+    <h4>4. Accident Distribution by Vehicle Age (Pie Chart)</h4>
+    <ul class="insight-list">
+      <li>The distribution across vehicle age groups (1 through 8+ years) is notably <strong>even</strong>, with each age group contributing between 7.4% and 11.07% of accidents.</li>
+      <li><strong>Age 1</strong> (newest vehicles) accounts for <strong>11.07% (33K)</strong>, suggesting new-car drivers may be more exposed or involved in more incidents.</li>
+      <li><strong>Age 2</strong> accounts for <strong>10.11% (30K)</strong>, and the proportion gradually decreases for older vehicles.</li>
+      <li>The even spread indicates that vehicle age alone is not a strong predictor of accident involvement — fleet size for each age cohort is the dominant driver.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Insight:</strong> Passenger cars are the dominant vehicle type in accidents by a wide margin, reflecting their overwhelming share of total vehicle kilometres travelled. The motorcycle severity premium — higher Fatal/Serious ratios despite lower volumes — underscores the critical importance of targeted motorcycle safety interventions. The even distribution across vehicle ages suggests that maintenance standards alone are insufficient to explain accident risk variation.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 8. CONCLUSION -->
+<section id="conclusion" class="container">
+  <h2><span class="section-num">8</span> Conclusion</h2>
+  <p>
+    This Power BI project delivers a comprehensive, evidence-based analysis of
+    <strong>342,000 road traffic accidents</strong> recorded across
+    <strong>249 countries</strong> between <strong>2021 and 2024</strong>.
+    By combining a well-structured Snowflake data model with six interactive dashboard pages,
+    the solution enables stakeholders to explore accident patterns at multiple levels of detail —
+    from global macro-trends down to individual road type and vehicle make granularity.
+  </p>
+
+  <h3>8.1 Key Findings Summary</h3>
+  <ul class="insight-list">
+    <li><strong>Single carriageway roads</strong> account for over 73% of all accidents, making them the single highest-priority target for infrastructure safety investment.</li>
+    <li><strong>Frontal collisions</strong> represent 51% of all first-impact events, pointing to head-on and rear-end collision scenarios as the dominant accident type.</li>
+    <li><strong>Male drivers</strong> are involved in 70% of accidents — 2.5 times more than female drivers — reflecting both exposure differences and behavioural risk factors.</li>
+    <li><strong>Good-weather, dry-road, daytime conditions</strong> produce the highest absolute accident counts, driven by sheer traffic volume. Adverse conditions amplify severity disproportionately.</li>
+    <li><strong>Urban zones</strong> generate 64% of all casualties, while rural zones — despite lower counts — carry higher per-incident severity due to higher speeds and slower emergency response.</li>
+    <li><strong>Motorcycles</strong> show the highest severity-to-volume ratio across all vehicle types, identifying them as the most vulnerable road user category per trip.</li>
+    <li><strong>Vauxhall, Ford, and Peugeot</strong> are the most frequently involved brands, consistent with their high market share rather than any brand-specific safety deficiency.</li>
+    <li>A clear <strong>cyclical seasonal pattern</strong> in accident frequency, with mid-year peaks, suggests that time-targeted safety campaigns could yield measurable reductions.</li>
+  </ul>
+
+  <h3>8.2 Recommendations</h3>
+  <ul>
+    <li>Prioritise <strong>physical separation infrastructure</strong> (median barriers, rumble strips) on single-carriageway roads.</li>
+    <li>Launch <strong>seasonal road safety campaigns</strong> timed to the mid-year peak period identified in the temporal analysis.</li>
+    <li>Strengthen <strong>motorcycle-specific safety measures</strong>: mandatory advanced training, improved protective equipment standards, and targeted enforcement.</li>
+    <li>Focus <strong>urban road safety</strong> on intersection design, pedestrian separation, and speed management given the 64% urban casualty share.</li>
+    <li>Enhance <strong>data quality</strong> for under-reported regions (particularly Africa) to ensure global analyses are not systematically biased.</li>
+  </ul>
+
+  <h3>8.3 Project Limitations</h3>
+  <ul>
+    <li>The dataset relies on self-reported or administratively recorded accident data, which introduces <strong>reporting bias</strong> — countries with stronger reporting infrastructure will appear to have more accidents.</li>
+    <li><strong>Vehicle kilometres travelled</strong> (exposure data) is not available in the dataset, making it impossible to calculate risk rates per kilometre — only absolute counts can be compared.</li>
+    <li>Some dimension attributes (e.g., <code>Etat_Driver</code>) had high proportions of unknown or missing values, limiting their analytical utility.</li>
+  </ul>
+
+  <h3>8.4 Future Work</h3>
+  <ul>
+    <li>Integrate <strong>population and vehicle registration data</strong> to calculate normalised accident rates per capita and per vehicle.</li>
+    <li>Apply <strong>machine learning models</strong> (e.g., logistic regression, random forest) in Python or R to predict accident severity from road and environmental features.</li>
+    <li>Add a <strong>real-time data refresh</strong> pipeline connecting Power BI to a live data source for continuous monitoring.</li>
+    <li>Develop a <strong>choropleth heatmap</strong> at country level for all KPIs to enrich the geographic storytelling.</li>
+  </ul>
+
+  <div class="callout" style="background:#e8f7ef;border-color:#27ae60;">
+    <strong>✅ Project Summary:</strong> This dashboard successfully translates 342,000 raw accident records into actionable intelligence across four analytical dimensions — geography, time, environment, and vehicle/driver profiling — using a clean Snowflake data model and professional Power BI visualisations. The findings provide a solid evidence base for road safety policy decisions at both national and global scales.
+  </div>
+</section>
+
+<footer>
+  <p>
+    <strong>Global Analysis of Road Traffic Accidents</strong> &nbsp;|&nbsp;
+    Author: Nada Belarbi &nbsp;|&nbsp;
+    Tool: Microsoft Power BI &nbsp;|&nbsp;
+    Data: Kaggle — Car Accident Dataset 2021–2024 &nbsp;|&nbsp;
+    Report generated: March 2026
+  </p>
+  <p style="margin-top:8px;">
+    Dataset source:
+    <a href="https://www.kaggle.com/datasets/nextmillionaire/car-accident-dataset-2021-2024"
+       target="_blank" style="color:#1a6abf;">
+      kaggle.com/datasets/nextmillionaire/car-accident-dataset-2021-2024
+    </a>
+  </p>
+</footer>
+
+</body>
+</html>
